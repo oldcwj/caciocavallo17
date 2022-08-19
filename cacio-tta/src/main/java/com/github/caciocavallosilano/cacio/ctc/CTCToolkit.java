@@ -27,6 +27,7 @@ package com.github.caciocavallosilano.cacio.ctc;
 import java.awt.AWTException;
 import java.awt.Desktop;
 import java.awt.Frame;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.HeadlessException;
 import java.awt.PrintJob;
@@ -192,6 +193,29 @@ public class CTCToolkit extends CacioToolkit {
     @Override
     public DataTransferer getDataTransferer() {
         return null;
+    }
+
+    // Cosntant alpha
+    @Override
+    public boolean isWindowOpacitySupported() {
+        return true;
+    }
+
+    // Shaping
+    @Override
+    public boolean isWindowShapingSupported() {
+        return true;
+    }
+
+    // Per-pixel alpha
+    @Override
+    public boolean isWindowTranslucencySupported() {
+        return true;
+    }
+
+    @Override
+    public boolean isTranslucencyCapable(GraphicsConfiguration gc) {
+        return true;
     }
 
     @Override
