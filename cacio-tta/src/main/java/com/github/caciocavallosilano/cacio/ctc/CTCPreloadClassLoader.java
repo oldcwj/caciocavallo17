@@ -50,11 +50,6 @@ public class CTCPreloadClassLoader extends URLClassLoader {
 
     static {
         try {
-            String propertyFontManager = System.getProperty("cacio.font.fontmanager");
-            if (propertyFontManager != null) {
-                FontManagerUtil.setFontManager(propertyFontManager);
-            }
-
             Field toolkit = Toolkit.class.getDeclaredField("toolkit");
             toolkit.setAccessible(true);
             toolkit.set(null, new CTCToolkit());
@@ -80,6 +75,11 @@ public class CTCPreloadClassLoader extends URLClassLoader {
             smf.set(null, null);
 
             ge.set(null, new CTCGraphicsEnvironment());
+
+            String propertyFontManager = System.getProperty("cacio.font.fontmanager");
+            if (propertyFontManager != null) {
+                FontManagerUtil.setFontManager(propertyFontManager);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
