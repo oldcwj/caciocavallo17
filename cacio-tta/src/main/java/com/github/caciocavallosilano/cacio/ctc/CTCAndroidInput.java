@@ -23,6 +23,11 @@ public class CTCAndroidInput {
                 // TODO implement hold state
                 mRobotPeer.keyPress(i2);
                 break;
+                
+                case EVENT_TYPE_CHAR:
+                // Send the char without checking shit
+                mRobotPeer.keyPressUnchecked((char)i1);
+                break;
 
             case EVENT_TYPE_MOUSE_BUTTON:
                 if (i2 == 1) {
