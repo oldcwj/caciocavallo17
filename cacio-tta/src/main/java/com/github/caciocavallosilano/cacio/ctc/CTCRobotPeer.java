@@ -146,6 +146,13 @@ public class CTCRobotPeer implements RobotPeer {
         if (keycode == KeyEvent.VK_SHIFT) {
           currentModifiers |= KeyEvent.SHIFT_MASK;
         }
+        if (keycode == KeyEvent.VK_CAPS_LOCK){
+            if((currentModifiers & KeyEvent.SHIFT_MASK) == KeyEvent.SHIFT_MASK){
+                currentModifiers &= ~KeyEvent.SHIFT_MASK;
+            }else{
+                currentModifiers |= KeyEvent.SHIFT_MASK;
+            }
+        }
         if (keycode == KeyEvent.VK_CONTROL) {
           currentModifiers |= KeyEvent.CTRL_MASK;
         }
@@ -155,6 +162,18 @@ public class CTCRobotPeer implements RobotPeer {
         keyEvent(keycode, KeyEvent.KEY_PRESSED);
         
         char keychar = getKeyCharFromCodeAndMods(keycode, currentModifiers);
+        if (keychar != KeyEvent.CHAR_UNDEFINED) {
+          EventData ev = new EventData();
+          ev.setSource(CTCScreen.getInstance());
+          ev.setId(KeyEvent.KEY_TYPED);
+          ev.setTime(System.currentTimeMillis());
+          ev.setModifiers(currentModifiers);
+          ev.setKeyChar(keychar);
+          CTCEventSource.getInstance().postEvent(ev);
+        }
+    }
+    
+    public void keyPressUnchecked(char keychar){
         if (keychar != KeyEvent.CHAR_UNDEFINED) {
           EventData ev = new EventData();
           ev.setSource(CTCScreen.getInstance());
