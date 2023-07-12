@@ -1,32 +1,23 @@
-name: Java CI
+name: Java CI with Maven
 
-on: [push, pull_request]
+on: [push, workflow_dispatch]
 
 jobs:
   build:
 
-    strategy:
-      matrix:
-        os: [macos, ubuntu, windows]
-      fail-fast: false
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: 17
-      - name: Build with Maven
-        run: mvn test --batch-mode --fail-at-end
-      - uses: actions/upload-artifact@v2
-        name: Publish ${{ matrix.os }} Test Output
-        if: ${{ always() }}
-        with:
-          name: surefire-reports-build-${{ matrix.os }}
-          path: '**/surefire-reports/*.txt'
-      - name: Publish ${{ matrix.os }} Test Report
-        if: ${{ always() }}
-        uses: scacap/action-surefire-report@v1
-        with:
-          check_name: Test Report (${{ matrix.os }})
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.17
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.17
+    - name: Build Maven and copy output
+      run: bash build_and_out.bash
+
+    - name: Upload build output
+      uses: actions/upload-artifact@v1
+      with:
+        name: caciocavallo
+        path: out
