@@ -35,6 +35,7 @@ import java.awt.Robot;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.Window;
+import java.awt.datatransfer.Clipboard;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.InvalidDnDOperationException;
 import java.awt.dnd.peer.DragSourceContextPeer;
@@ -76,6 +77,11 @@ public class CTCToolkit extends CacioToolkit {
             throws AWTException {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public Clipboard getSystemClipboard() {
+        return CTCClipboard.INSTANCE;
     }
 
     @Override

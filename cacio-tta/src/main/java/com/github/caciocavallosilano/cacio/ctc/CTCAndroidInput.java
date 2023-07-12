@@ -21,7 +21,8 @@ public class CTCAndroidInput {
 
             case EVENT_TYPE_KEY:
                 // TODO implement hold state
-                mRobotPeer.keyPress(i2);
+                if(i3 == 1)mRobotPeer.keyPress(i2);
+                else mRobotPeer.keyRelease(i2);
                 break;
                 
                 case EVENT_TYPE_CHAR:
