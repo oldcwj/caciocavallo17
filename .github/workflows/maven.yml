@@ -14,7 +14,7 @@ jobs:
       with:
         java-version: 17
     - name: Build Maven and copy output
-      run: bash build_and_out.bash
+      run: bash build_and_out.sh
 
     - name: Upload build output
       uses: actions/upload-artifact@v1
