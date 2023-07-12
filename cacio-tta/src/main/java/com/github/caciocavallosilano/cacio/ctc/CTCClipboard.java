@@ -77,7 +77,8 @@ public class CTCClipboard extends Clipboard {
     private static void systemClipboardDataReceived(String clipboardData, String clipboardDataMime) {
         synchronized(sSyncLock) {
             lastClipboardCheckTime = System.currentTimeMillis();
-            INSTANCE.contents = new CTCStringTransferable(clipboardData, clipboardDataMime);
+            if(clipboardData != null && clipboardDataMime != null)
+                INSTANCE.contents = new CTCStringTransferable(clipboardData, clipboardDataMime);
             sSyncLock.notifyAll();
         }
     }
