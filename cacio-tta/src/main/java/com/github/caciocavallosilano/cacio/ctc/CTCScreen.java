@@ -139,7 +139,7 @@ public class CTCScreen implements PlatformScreen {
             File currLibFile;
             for (String ldLib : System.getenv("LD_LIBRARY_PATH").split(":")) {
                 if (ldLib.isEmpty()) continue;
-                currLibFile = new File(ldLib, "libpojavexec_awt.so");
+                currLibFile = new File(ldLib, "libcbjavaexec_awt.so");
                 if (currLibFile.exists()) {
                     System.load(currLibFile.getAbsolutePath());
                     break;
