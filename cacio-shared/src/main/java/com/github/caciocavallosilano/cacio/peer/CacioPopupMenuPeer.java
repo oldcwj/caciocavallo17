@@ -55,53 +55,53 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
 
         PopupMenu popupMenu = (PopupMenu) getAWTMenu();
 
-        Dimension d = getPopupMenuPreferredSize(popupMenu);
+        //Dimension d = getPopupMenuPreferredSize(popupMenu);
 
         popupMenu.show((Component) e.target, e.x, e.y);
         //popupMenu.setSize(d.width, d.height);
 
-        addGlobalMouseListener(popupMenu);
+        // addGlobalMouseListener(popupMenu);
     }
 
-    private void addGlobalMouseListener(PopupMenu popupMenu) {
-        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-            @Override
-            public void eventDispatched(AWTEvent event) {
-                if (event instanceof MouseEvent) {
-                    MouseEvent mouseEvent = (MouseEvent) event;
-                    if (mouseEvent.getID() == MouseEvent.MOUSE_CLICKED) {
-                        if (!isClickInsidePopupMenu(popupMenu, mouseEvent)) {
-                            popupMenu.setVisible(false);
-                            Toolkit.getDefaultToolkit().removeAWTEventListener(this);
-                        }
-                    }
-                }
-            }
-        }, AWTEvent.MOUSE_EVENT_MASK);
-    }
+    // private void addGlobalMouseListener(PopupMenu popupMenu) {
+    //     Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+    //         @Override
+    //         public void eventDispatched(AWTEvent event) {
+    //             if (event instanceof MouseEvent) {
+    //                 MouseEvent mouseEvent = (MouseEvent) event;
+    //                 if (mouseEvent.getID() == MouseEvent.MOUSE_CLICKED) {
+    //                     if (!isClickInsidePopupMenu(popupMenu, mouseEvent)) {
+    //                         popupMenu.setVisible(false);
+    //                         Toolkit.getDefaultToolkit().removeAWTEventListener(this);
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }, AWTEvent.MOUSE_EVENT_MASK);
+    // }
 
-    private boolean isClickInsidePopupMenu(PopupMenu popupMenu, MouseEvent e) {
-        Point point = e.getPoint();
-        Rectangle menuBounds = new Rectangle(popupMenu.getLocation(), popupMenu.getSize());
-        return menuBounds.contains(point);
-    }
+    // private boolean isClickInsidePopupMenu(PopupMenu popupMenu, MouseEvent e) {
+    //     Point point = e.getPoint();
+    //     Rectangle menuBounds = new Rectangle(popupMenu.getLocation(), popupMenu.getSize());
+    //     return menuBounds.contains(point);
+    // }
 
-    private Dimension getPopupMenuPreferredSize(PopupMenu popupMenu) {
-        int width = 0;
-        int height = 0;
-        int nItems = popupMenu.getItemCount();
+    // private Dimension getPopupMenuPreferredSize(PopupMenu popupMenu) {
+    //     int width = 0;
+    //     int height = 0;
+    //     int nItems = popupMenu.getItemCount();
 
-        for (int i = 0; i < nItems; i++) {
-            Dimension itemSize = popupMenu.getItem(i).getPreferredSize();
-            width = Math.max(width, itemSize.width);
-            height += itemSize.height;
-        }
+    //     for (int i = 0; i < nItems; i++) {
+    //         Dimension itemSize = popupMenu.getItem(i).getPreferredSize();
+    //         width = Math.max(width, itemSize.width);
+    //         height += itemSize.height;
+    //     }
 
-        Insets insets = popupMenu.getInsets();
-        width += insets.left + insets.right;
-        height += insets.top + insets.bottom;
+    //     Insets insets = popupMenu.getInsets();
+    //     width += insets.left + insets.right;
+    //     height += insets.top + insets.bottom;
 
-        return new Dimension(width, height);
-    }
+    //     return new Dimension(width, height);
+    // }
 
 }
