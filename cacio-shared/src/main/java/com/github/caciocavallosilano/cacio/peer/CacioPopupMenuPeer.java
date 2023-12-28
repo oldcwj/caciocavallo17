@@ -34,8 +34,6 @@ import java.awt.peer.PopupMenuPeer;
 // import javax.swing.event.*;
 // import java.awt.event.*;
 
-import javax.swing.*;
-import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -60,9 +58,9 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
         Dimension d = getPopupMenuPreferredSize(popupMenu);
 
         popupMenu.show((Component) e.target, e.x, e.y);
-        popupMenu.setSize(d.width, d.height);
+        //popupMenu.setSize(d.width, d.height);
 
-        addGlobalMouseListener(pm);
+        addGlobalMouseListener(popupMenu);
     }
 
     private void addGlobalMouseListener(PopupMenu popupMenu) {
