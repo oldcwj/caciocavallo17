@@ -45,18 +45,18 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
         super(m);
     }
 
-    public void show(Event e) {
-        JMenu m = (JMenu) getSwingMenu();
-        JPopupMenu pm = m.getPopupMenu();
-        Dimension d = pm.getPreferredSize();
-        // TODO: Fix location relative to target.
-        pm.setLocation(e.x, e.y);
-        pm.setSize(d.width, d.height);
-        pm.setVisible(true);
-        // TODO: Add listener for closing the popup menu.
+    // public void show(Event e) {
+    //     JMenu m = (JMenu) getSwingMenu();
+    //     JPopupMenu pm = m.getPopupMenu();
+    //     Dimension d = pm.getPreferredSize();
+    //     // TODO: Fix location relative to target.
+    //     pm.setLocation(e.x, e.y);
+    //     pm.setSize(d.width, d.height);
+    //     pm.setVisible(true);
+    //     // TODO: Add listener for closing the popup menu.
 
-        addGlobalMouseListener(pm);
-    }
+    //     addGlobalMouseListener(pm);
+    // }
 
     private void addGlobalMouseListener(JPopupMenu popupMenu) {
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
