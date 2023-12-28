@@ -57,10 +57,10 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
 
         //Dimension d = getPopupMenuPreferredSize(popupMenu);
 
-        popupMenu.show((Component) e.target, e.x, e.y);
+        //popupMenu.show((Component) e.target, e.x, e.y);
         //popupMenu.setSize(d.width, d.height);
 
-        // addGlobalMouseListener(popupMenu);
+        //addGlobalMouseListener(popupMenu);
     }
 
     // private void addGlobalMouseListener(PopupMenu popupMenu) {
