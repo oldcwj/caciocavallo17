@@ -45,20 +45,27 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
         super(m);
     }
 
-    // public void show(Event e) {
-    //     JMenu m = (JMenu) getSwingMenu();
-    //     JPopupMenu pm = m.getPopupMenu();
-    //     Dimension d = pm.getPreferredSize();
-    //     // TODO: Fix location relative to target.
-    //     pm.setLocation(e.x, e.y);
-    //     pm.setSize(d.width, d.height);
-    //     pm.setVisible(true);
-    //     // TODO: Add listener for closing the popup menu.
+    public void show(Event e) {
+        // JMenu m = (JMenu) getSwingMenu();
+        // JPopupMenu pm = m.getPopupMenu();
+        // Dimension d = pm.getPreferredSize();
+        // // TODO: Fix location relative to target.
+        // pm.setLocation(e.x, e.y);
+        // pm.setSize(d.width, d.height);
+        // pm.setVisible(true);
+        // TODO: Add listener for closing the popup menu.
 
-    //     addGlobalMouseListener(pm);
-    // }
+        PopupMenu popupMenu = (PopupMenu) getAWTMenu();
 
-    private void addGlobalMouseListener(JPopupMenu popupMenu) {
+        Dimension d = getPopupMenuPreferredSize(popupMenu);
+
+        popupMenu.show((Component) e.target, e.x, e.y);
+        popupMenu.setSize(d.width, d.height);
+
+        addGlobalMouseListener(pm);
+    }
+
+    private void addGlobalMouseListener(PopupMenu popupMenu) {
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
             @Override
             public void eventDispatched(AWTEvent event) {
@@ -75,12 +82,28 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
         }, AWTEvent.MOUSE_EVENT_MASK);
     }
 
-    private boolean isClickInsidePopupMenu(JPopupMenu popupMenu, MouseEvent e) {
+    private boolean isClickInsidePopupMenu(PopupMenu popupMenu, MouseEvent e) {
         Point point = e.getPoint();
-        Point menuLocation = popupMenu.getLocationOnScreen();
-        Rectangle menuBounds = new Rectangle(menuLocation.x, menuLocation.y,
-                popupMenu.getWidth(), popupMenu.getHeight());
+        Rectangle menuBounds = new Rectangle(popupMenu.getLocation(), popupMenu.getSize());
         return menuBounds.contains(point);
+    }
+
+    private Dimension getPopupMenuPreferredSize(PopupMenu popupMenu) {
+        int width = 0;
+        int height = 0;
+        int nItems = popupMenu.getItemCount();
+
+        for (int i = 0; i < nItems; i++) {
+            Dimension itemSize = popupMenu.getItem(i).getPreferredSize();
+            width = Math.max(width, itemSize.width);
+            height += itemSize.height;
+        }
+
+        Insets insets = popupMenu.getInsets();
+        width += insets.left + insets.right;
+        height += insets.top + insets.bottom;
+
+        return new Dimension(width, height);
     }
 
 }
