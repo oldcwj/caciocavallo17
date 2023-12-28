@@ -31,6 +31,8 @@ import java.awt.PopupMenu;
 import java.awt.peer.PopupMenuPeer;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
+import javax.swing.event.*;
+import java.awt.event.*;
 
 class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
 
@@ -47,6 +49,33 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
         pm.setSize(d.width, d.height);
         pm.setVisible(true);
         // TODO: Add listener for closing the popup menu.
+
+        addGlobalMouseListener(pm);
+    }
+
+    private void addGlobalMouseListener(JPopupMenu popupMenu) {
+        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+            @Override
+            public void eventDispatched(AWTEvent event) {
+                if (event instanceof MouseEvent) {
+                    MouseEvent mouseEvent = (MouseEvent) event;
+                    if (mouseEvent.getID() == MouseEvent.MOUSE_CLICKED) {
+                        if (!isClickInsidePopupMenu(popupMenu, mouseEvent)) {
+                            popupMenu.setVisible(false);
+                            Toolkit.getDefaultToolkit().removeAWTEventListener(this);
+                        }
+                    }
+                }
+            }
+        }, AWTEvent.MOUSE_EVENT_MASK);
+    }
+
+    private boolean isClickInsidePopupMenu(JPopupMenu popupMenu, MouseEvent e) {
+        Point point = e.getPoint();
+        Point menuLocation = popupMenu.getLocationOnScreen();
+        Rectangle menuBounds = new Rectangle(menuLocation.x, menuLocation.y,
+                popupMenu.getWidth(), popupMenu.getHeight());
+        return menuBounds.contains(point);
     }
 
 }
