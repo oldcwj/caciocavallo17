@@ -68,7 +68,7 @@ class CacioMenuItemPeer extends CacioMenuComponentPeer<MenuItem,JMenuItem>
     }
 
     boolean needActionProxy() {
-        return true;
+        return false;
     }
 
     public void setLabel(String label) {
