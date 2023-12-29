@@ -57,12 +57,12 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
 
         addGlobalMouseListener(pm);
 
-        pm.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                pm.requestFocusInWindow(); 
-            }
-        });
+        // pm.addMouseListener(new MouseAdapter() {
+        //     @Override
+        //     public void mouseEntered(MouseEvent e) {
+        //         pm.requestFocusInWindow(); 
+        //     }
+        // });
     }
 
     private void addGlobalMouseListener(JPopupMenu popupMenu) {
@@ -80,29 +80,29 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
         //         }
         //     }
         // }, AWTEvent.MOUSE_EVENT_MASK);
-        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-            @Override
-            public void eventDispatched(AWTEvent event) {
-            }
-        }, AWTEvent.COMPONENT_EVENT_MASK);
+        // Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+        //     @Override
+        //     public void eventDispatched(AWTEvent event) {
+        //     }
+        // }, AWTEvent.COMPONENT_EVENT_MASK);
         
-        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-            @Override
-            public void eventDispatched(AWTEvent event) {
-            }
-        }, AWTEvent.MOUSE_EVENT_MASK);
+        // Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+        //     @Override
+        //     public void eventDispatched(AWTEvent event) {
+        //     }
+        // }, AWTEvent.MOUSE_EVENT_MASK);
         
-        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-            @Override
-            public void eventDispatched(AWTEvent event) {
-            }
-        }, AWTEvent.FOCUS_EVENT_MASK);
+        // Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+        //     @Override
+        //     public void eventDispatched(AWTEvent event) {
+        //     }
+        // }, AWTEvent.FOCUS_EVENT_MASK);
 
-        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-            @Override
-            public void eventDispatched(AWTEvent event) {
-            }
-        }, AWTEvent.KEY_EVENT_MASK);
+        // Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+        //     @Override
+        //     public void eventDispatched(AWTEvent event) {
+        //     }
+        // }, AWTEvent.KEY_EVENT_MASK);
     }
 
     private boolean isClickInsidePopupMenu(JPopupMenu popupMenu, MouseEvent e) {
