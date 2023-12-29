@@ -72,6 +72,34 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
                 }
             }
         });
+
+        pm.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+                
+            }
+
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+
+            }
+        });
+        pm.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent popupMenuEvent) {
+                
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent popupMenuEvent) {
+
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent popupMenuEvent) {
+
+            }
+        });
     }
 
     private void addGlobalMouseListener(JPopupMenu popupMenu) {
