@@ -25,11 +25,10 @@
 
 package com.github.caciocavallosilano.cacio.peer;
 
-import java.awt.MenuItem;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.peer.MenuItemPeer;
-import javax.swing.JMenuItem;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 class CacioMenuItemPeer extends CacioMenuComponentPeer<MenuItem,JMenuItem>
                         implements MenuItemPeer {
