@@ -64,6 +64,14 @@ class CacioMenuItemPeer extends CacioMenuComponentPeer<MenuItem,JMenuItem>
         setEnabled(getAWTMenu().isEnabled());
         if (needActionProxy()) {
             getSwingMenu().addActionListener(new ProxyListener());
+            getSwingMenu().addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    int x = e.getX();
+                    int y = e.getY();
+                    System.out.println("Mouse Clicked at: (" + x + ", " + y + ")");
+                }
+            });
         }
     }
 
