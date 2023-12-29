@@ -51,7 +51,7 @@ class CacioMenuPeer extends CacioMenuItemPeer
 
     @Override
     boolean needActionProxy() {
-        return true;
+        return false;
     }
 
     public void addSeparator() {
