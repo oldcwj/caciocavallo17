@@ -56,6 +56,13 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
         // TODO: Add listener for closing the popup menu.
 
         addGlobalMouseListener(pm);
+
+        pm.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                pm.requestFocusInWindow(); 
+            }
+        });
     }
 
     private void addGlobalMouseListener(JPopupMenu popupMenu) {
