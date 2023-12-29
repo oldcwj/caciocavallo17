@@ -56,50 +56,17 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
         // TODO: Add listener for closing the popup menu.
 
         //addGlobalMouseListener(pm);
-
-        pm.addMouseListener(new MouseAdapter() {
+        // Add listener for closing the popup menu when clicking elsewhere
+        MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) {
-                pm.requestFocusInWindow(); 
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                System.out.println("mouse Clicked");
-                if (!isClickInsidePopupMenu(pm, e)) {
-                     pm.setVisible(false);
-                     // Toolkit.getDefaultToolkit().removeAWTEventListener(this);
+            public void mouseClicked(MouseEvent mouseEvent) {
+                if (!pm.getBounds().contains(mouseEvent.getPoint())) {
+                    pm.setVisible(false);
+                    pm.removeMouseListener(this); 
                 }
             }
-        });
-
-        pm.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent focusEvent) {
-                
-            }
-
-            @Override
-            public void focusLost(FocusEvent focusEvent) {
-
-            }
-        });
-        pm.addPopupMenuListener(new PopupMenuListener() {
-            @Override
-            public void popupMenuWillBecomeVisible(PopupMenuEvent popupMenuEvent) {
-                
-            }
-
-            @Override
-            public void popupMenuWillBecomeInvisible(PopupMenuEvent popupMenuEvent) {
-
-            }
-
-            @Override
-            public void popupMenuCanceled(PopupMenuEvent popupMenuEvent) {
-
-            }
-        });
+        };
+        pm.addMouseListener(mouseAdapter);
     }
 
     private void addGlobalMouseListener(JPopupMenu popupMenu) {
