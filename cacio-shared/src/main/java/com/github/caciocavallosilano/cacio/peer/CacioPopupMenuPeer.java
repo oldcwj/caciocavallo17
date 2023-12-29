@@ -66,43 +66,20 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
     }
 
     private void addGlobalMouseListener(JPopupMenu popupMenu) {
-        // Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-        //     @Override
-        //     public void eventDispatched(AWTEvent event) {
-        //         if (event instanceof MouseEvent) {
-        //             MouseEvent mouseEvent = (MouseEvent) event;
-        //             if (mouseEvent.getID() == MouseEvent.MOUSE_CLICKED) {
-        //                 if (!isClickInsidePopupMenu(popupMenu, mouseEvent)) {
-        //                     // popupMenu.setVisible(false);
-        //                     // Toolkit.getDefaultToolkit().removeAWTEventListener(this);
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }, AWTEvent.MOUSE_EVENT_MASK);
-        // Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-        //     @Override
-        //     public void eventDispatched(AWTEvent event) {
-        //     }
-        // }, AWTEvent.COMPONENT_EVENT_MASK);
-        
-        // Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-        //     @Override
-        //     public void eventDispatched(AWTEvent event) {
-        //     }
-        // }, AWTEvent.MOUSE_EVENT_MASK);
-        
-        // Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-        //     @Override
-        //     public void eventDispatched(AWTEvent event) {
-        //     }
-        // }, AWTEvent.FOCUS_EVENT_MASK);
-
-        // Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-        //     @Override
-        //     public void eventDispatched(AWTEvent event) {
-        //     }
-        // }, AWTEvent.KEY_EVENT_MASK);
+        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+            @Override
+            public void eventDispatched(AWTEvent event) {
+                if (event instanceof MouseEvent) {
+                    MouseEvent mouseEvent = (MouseEvent) event;
+                    if (mouseEvent.getID() == MouseEvent.MOUSE_CLICKED) {
+                        if (!isClickInsidePopupMenu(popupMenu, mouseEvent)) {
+                            // popupMenu.setVisible(false);
+                            // Toolkit.getDefaultToolkit().removeAWTEventListener(this);
+                        }
+                    }
+                }
+            }
+        }, AWTEvent.MOUSE_EVENT_MASK);
     }
 
     private boolean isClickInsidePopupMenu(JPopupMenu popupMenu, MouseEvent e) {
