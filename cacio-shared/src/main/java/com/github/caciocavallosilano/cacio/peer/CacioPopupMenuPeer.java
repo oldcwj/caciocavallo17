@@ -65,7 +65,7 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!isClickInsidePopupMenu(popupMenu, mouseEvent)) {
+                if (!isClickInsidePopupMenu(pm, e)) {
                      pm.setVisible(false);
                      // Toolkit.getDefaultToolkit().removeAWTEventListener(this);
                 }
