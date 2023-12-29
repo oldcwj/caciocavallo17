@@ -55,7 +55,7 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
         pm.setVisible(true);
         // TODO: Add listener for closing the popup menu.
 
-        //addGlobalMouseListener(pm);
+        addGlobalMouseListener(pm);
 
         // pm.addMouseListener(new MouseAdapter() {
         //     @Override
@@ -81,8 +81,8 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
                     MouseEvent mouseEvent = (MouseEvent) event;
                     if (mouseEvent.getID() == MouseEvent.MOUSE_CLICKED) {
                         if (!isClickInsidePopupMenu(popupMenu, mouseEvent)) {
-                            // popupMenu.setVisible(false);
-                            // Toolkit.getDefaultToolkit().removeAWTEventListener(this);
+                            popupMenu.setVisible(false);
+                            Toolkit.getDefaultToolkit().removeAWTEventListener(this);
                         }
                     }
                 }
