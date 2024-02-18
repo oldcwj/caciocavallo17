@@ -59,7 +59,7 @@ public class CTCPreloadClassLoader extends URLClassLoader {
 
     static {
         try {
-            ByteBuddyAgent.install();
+//            ByteBuddyAgent.install();
 
             var lookup = MethodHandles.privateLookupIn(Field.class, MethodHandles.lookup());
             MODIFIERS = lookup.findVarHandle(Field.class, "modifiers", int.class);
@@ -70,7 +70,7 @@ public class CTCPreloadClassLoader extends URLClassLoader {
 
     static {
         try {
-            injectCTCGraphicsEnvironment();
+//            injectCTCGraphicsEnvironment();
 
             Field toolkit = Toolkit.class.getDeclaredField("toolkit");
             toolkit.setAccessible(true);
@@ -83,11 +83,11 @@ public class CTCPreloadClassLoader extends URLClassLoader {
             headlessField.setAccessible(true);
             headlessField.set(null,Boolean.FALSE);
 
-//            Class<?> geCls = Class.forName("java.awt.GraphicsEnvironment$LocalGE");
-//            Field ge = geCls.getDeclaredField("INSTANCE");
-//            ge.setAccessible(true);
-//            defaultHeadlessField.set(null, Boolean.FALSE);
-//            headlessField.set(null,Boolean.FALSE);
+            Class<?> geCls = Class.forName("java.awt.GraphicsEnvironment$LocalGE");
+            Field ge = geCls.getDeclaredField("INSTANCE");
+            ge.setAccessible(true);
+            defaultHeadlessField.set(null, Boolean.FALSE);
+            headlessField.set(null,Boolean.FALSE);
 
             //makeNonFinal(ge);
 
@@ -96,7 +96,7 @@ public class CTCPreloadClassLoader extends URLClassLoader {
             smf.setAccessible(true);
             smf.set(null, null);
 
-//            ge.set(null, new CTCGraphicsEnvironment());
+            ge.set(null, new CTCGraphicsEnvironment());
 
             String propertyFontManager = System.getProperty("cacio.font.fontmanager");
             if (propertyFontManager != null) {
