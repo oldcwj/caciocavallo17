@@ -24,22 +24,32 @@
  */
 package com.github.caciocavallosilano.cacio.ctc;
 
+import com.github.caciocavallosilano.cacio.ctc.junit.CTCInterceptor;
+import com.github.caciocavallosilano.cacio.peer.PlatformWindowFactory;
+import com.github.caciocavallosilano.cacio.peer.managed.FullScreenWindowFactory;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.dynamic.ClassFileLocator;
+import net.bytebuddy.dynamic.loading.ClassInjector;
+import net.bytebuddy.dynamic.loading.ClassReloadingStrategy;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.implementation.bind.annotation.*;
+import net.bytebuddy.matcher.ElementMatchers;
+import net.bytebuddy.pool.TypePool;
+import net.bytebuddy.agent.ByteBuddyAgent;
+
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.net.*;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 
 import static net.bytebuddy.matcher.ElementMatchers.nameStartsWith;
 
@@ -49,6 +59,8 @@ public class CTCPreloadClassLoader extends URLClassLoader {
 
     static {
         try {
+            ByteBuddyAgent.install();
+
             var lookup = MethodHandles.privateLookupIn(Field.class, MethodHandles.lookup());
             MODIFIERS = lookup.findVarHandle(Field.class, "modifiers", int.class);
         } catch (IllegalAccessException | NoSuchFieldException ex) {
@@ -58,6 +70,7 @@ public class CTCPreloadClassLoader extends URLClassLoader {
 
     static {
         try {
+            injectCTCGraphicsEnvironment();
 
             Field toolkit = Toolkit.class.getDeclaredField("toolkit");
             toolkit.setAccessible(true);
@@ -70,30 +83,26 @@ public class CTCPreloadClassLoader extends URLClassLoader {
             headlessField.setAccessible(true);
             headlessField.set(null,Boolean.FALSE);
 
-            Class<?> geCls = Class.forName("java.awt.GraphicsEnvironment$LocalGE");
-            Field ge = geCls.getDeclaredField("INSTANCE");
-            ge.setAccessible(true);
-            defaultHeadlessField.set(null, Boolean.FALSE);
-            headlessField.set(null,Boolean.FALSE);
+//            Class<?> geCls = Class.forName("java.awt.GraphicsEnvironment$LocalGE");
+//            Field ge = geCls.getDeclaredField("INSTANCE");
+//            ge.setAccessible(true);
+//            defaultHeadlessField.set(null, Boolean.FALSE);
+//            headlessField.set(null,Boolean.FALSE);
 
             //makeNonFinal(ge);
-            MethodHandle setter = getMethodHandle(ge, geCls);
-            setter.invoke(new CTCGraphicsEnvironment());
 
             Class<?> smfCls = Class.forName("sun.java2d.SurfaceManagerFactory");
             Field smf = smfCls.getDeclaredField("instance");
             smf.setAccessible(true);
             smf.set(null, null);
 
-            //ge.set(null, new CTCGraphicsEnvironment());
+//            ge.set(null, new CTCGraphicsEnvironment());
 
             String propertyFontManager = System.getProperty("cacio.font.fontmanager");
             if (propertyFontManager != null) {
                 FontManagerUtil.setFontManager(propertyFontManager);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-        } catch (Throwable e) {
             e.printStackTrace();
         }
 
@@ -104,6 +113,73 @@ public class CTCPreloadClassLoader extends URLClassLoader {
         super(new URL[0], parent);
     }
 
+    public static void injectCTCGraphicsEnvironment() throws ClassNotFoundException, IOException {
+        /*
+         * ByteBuddy is used to intercept the methods that return the graphics environment in use
+         * (java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment() and
+         *  sun.awt.PlatformGraphicsInfo.createGE())
+         *
+         * Since java.awt.GraphicsEnvironment is loaded by the bootstrap class loader,
+         * all classes used by CTCGraphicsEnvironment also need to be available to the bootstrap class loader,
+         * as that class loader also loads the CTCInterceptor class, which will instantiate CTCGraphicsEnvironment.
+         */
+        injectClassIntoBootstrapClassLoader(
+                CTCInterceptor.class,
+                CTCGraphicsEnvironment.class,
+                CTCSurfaceManagerFactory.class,
+                CTCGraphicsConfiguration.class,
+                PlatformWindowFactory.class,
+                FullScreenWindowFactory.class,
+                CTCGraphicsDevice.class,
+                CTCVolatileSurfaceManager.class);
+
+        ByteBuddy byteBuddy = new ByteBuddy();
+
+        byteBuddy
+                .redefine(
+                        TypePool.Default.ofSystemLoader().describe("java.awt.GraphicsEnvironment").resolve(),
+                        ClassFileLocator.ForClassLoader.ofSystemLoader())
+                .method(ElementMatchers.named("getLocalGraphicsEnvironment"))
+                .intercept(
+                        MethodDelegation.to(CTCInterceptor.class))
+                .make()
+                .load(
+                        Object.class.getClassLoader(),
+                        ClassReloadingStrategy.fromInstalledAgent());
+
+        TypeDescription platformGraphicInfosType;
+        platformGraphicInfosType = TypePool.Default.ofSystemLoader().describe("sun.awt.PlatformGraphicsInfo").resolve();
+        ClassFileLocator locator = ClassFileLocator.ForClassLoader.ofSystemLoader();
+
+        byteBuddy
+                .redefine(
+                        platformGraphicInfosType,
+                        locator)
+                .method(
+                        nameStartsWith("createGE"))
+                .intercept(
+                        MethodDelegation.to(GraphicsEnvironmentInterceptor.class))
+                .make()
+                .load(
+                        Thread.currentThread().getContextClassLoader(),
+                        ClassReloadingStrategy.fromInstalledAgent());
+
+    }
+
+    private static void injectClassIntoBootstrapClassLoader(Class... classes) throws IOException {
+        for (Class<?> clazz: classes) {
+            final byte[] buffer = clazz.getClassLoader().getResourceAsStream(clazz.getName().replace('.', '/').concat(".class")).readAllBytes();
+            ClassInjector.UsingUnsafe injector = new ClassInjector.UsingUnsafe(null);
+            injector.injectRaw(Map.of(clazz.getName(), buffer));
+        }
+    }
+
+    public static class GraphicsEnvironmentInterceptor {
+        @RuntimeType
+        public static Object intercept(@Origin Method method, @AllArguments final Object[] args) throws Exception {
+            return CTCGraphicsEnvironment.getInstance();
+        }
+    }
 
     @Override
     public void addURL(URL url) {
@@ -138,51 +214,5 @@ public class CTCPreloadClassLoader extends URLClassLoader {
         if (Modifier.isFinal(mods)) {
             MODIFIERS.set(field, mods & ~Modifier.FINAL);
         }
-    }
-
-    public static Field getField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
-        return clazz.getDeclaredField(fieldName);
-    }
-
-    public static void removeFinalness(Field field) throws Throwable {
-        Method declaredFieldMethod = Arrays.stream(Class.class.getDeclaredMethods())
-                .filter(x -> Objects.equals(x.getName(), "getDeclaredFields0"))
-                .findAny()
-                .orElseThrow();
-
-        declaredFieldMethod.setAccessible(true);
-        Field[] declaredFieldsOfField = (Field[]) declaredFieldMethod.invoke(Field.class, false);
-
-        Field modifiersField = Arrays.stream(declaredFieldsOfField)
-                .filter(x -> Objects.equals(x.getName(), "modifiers"))
-                .findAny()
-                .orElseThrow();
-
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-    }
-
-    public static MethodHandle getMethodHandle(Field field, Class clazz) throws Throwable {
-        Class<?> memberNameClass = Class.forName("java.lang.invoke.MemberName");
-        Constructor<?> memberNameConstructor = memberNameClass.getDeclaredConstructor(Field.class, boolean.class);
-        memberNameConstructor.setAccessible(true);
-        Object memberNameInstanceForField = memberNameConstructor.newInstance(field, true);
-
-        Field memberNameFlagsField = memberNameClass.getDeclaredField("flags");
-        memberNameFlagsField.setAccessible(true);
-        memberNameFlagsField.setInt(memberNameInstanceForField,
-                (int) memberNameFlagsField.getInt(memberNameInstanceForField) & ~Modifier.FINAL);
-
-        Method getReferenceKindMethod = memberNameClass.getDeclaredMethod("getReferenceKind");
-        getReferenceKindMethod.setAccessible(true);
-        byte getReferenceKind = (byte) getReferenceKindMethod.invoke(memberNameInstanceForField);
-
-        MethodHandles.Lookup mh = MethodHandles.privateLookupIn(clazz, MethodHandles.lookup());
-
-        Method getDirectFieldCommonMethod = mh.getClass().getDeclaredMethod("getDirectFieldCommon",
-                byte.class, Class.class, memberNameClass, boolean.class);
-        getDirectFieldCommonMethod.setAccessible(true);
-        return (MethodHandle) getDirectFieldCommonMethod.invoke(mh, getReferenceKind,
-                field.getDeclaringClass(), memberNameInstanceForField, false);
     }
 }
