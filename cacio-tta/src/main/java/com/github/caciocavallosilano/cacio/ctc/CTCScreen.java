@@ -58,10 +58,6 @@ public class CTCScreen implements PlatformScreen {
     private CTCScreen() {
         Dimension d = FullScreenWindowFactory.getScreenDimension();
         screenBuffer = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = screenBuffer.createGraphics();
-        g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, d.width, d.height);
-        g2d.dispose();
     }
 
     @Override
