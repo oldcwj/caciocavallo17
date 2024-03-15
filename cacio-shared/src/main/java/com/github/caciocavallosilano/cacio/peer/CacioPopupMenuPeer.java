@@ -54,7 +54,24 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
         pm.setSize(d.width, d.height);
         pm.setVisible(true);
         // TODO: Add listener for closing the popup menu.
-        addGlobalMouseListener(pm);
+        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+            public void eventDispatched(AWTEvent event) {
+                if (event instanceof MouseEvent && ((MouseEvent) event).getID() == MouseEvent.MOUSE_CLICKED) {
+                    MouseEvent mouseEvent = (MouseEvent) event;
+                    Point point = mouseEvent.getPoint();
+                    SwingUtilities.convertPointToScreen(point, pm);
+                    if (!pm.getBounds().contains(point) && !isMenuItemClicked(mouseEvent, pm)) {
+                        pm.setVisible(false);
+                    }
+                }
+            }
+        }, AWTEvent.MOUSE_EVENT_MASK);
+
+    }
+
+    private boolean isMenuItemClicked(MouseEvent event, JPopupMenu popupMenu) {
+        Component component = SwingUtilities.getDeepestComponentAt(popupMenu, event.getX(), event.getY());
+        return component instanceof JMenuItem;
     }
 
     private void addGlobalMouseListener(JPopupMenu popupMenu) {
