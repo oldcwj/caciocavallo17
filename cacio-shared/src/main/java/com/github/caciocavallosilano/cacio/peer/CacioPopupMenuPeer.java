@@ -60,18 +60,20 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
                     MouseEvent mouseEvent = (MouseEvent) event;
                     Point point = mouseEvent.getPoint();
                     SwingUtilities.convertPointToScreen(point, pm);
-                    if (!pm.getBounds().contains(point) && !isMenuItemClicked(mouseEvent, pm)) {
+                    Component component = SwingUtilities.getDeepestComponentAt(pm, point.x, point.y);
+                    if (component instanceof JMenuItem) {
+                        JMenuItem menuItem = (JMenuItem) component;
+                        // Execute action associated with the menu item
+                        menuItem.doClick();
+                        // Hide the popup menu after the action is performed
+                        pm.setVisible(false);
+                    } else if (!pm.getBounds().contains(point)) {
                         pm.setVisible(false);
                     }
                 }
             }
         }, AWTEvent.MOUSE_EVENT_MASK);
 
-    }
-
-    private boolean isMenuItemClicked(MouseEvent event, JPopupMenu popupMenu) {
-        Component component = SwingUtilities.getDeepestComponentAt(popupMenu, event.getX(), event.getY());
-        return component instanceof JMenuItem;
     }
 
     private void addGlobalMouseListener(JPopupMenu popupMenu) {
