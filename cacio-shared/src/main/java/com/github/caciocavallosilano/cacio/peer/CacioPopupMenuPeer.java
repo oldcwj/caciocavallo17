@@ -66,7 +66,7 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
                         // Execute action associated with the menu item
                         menuItem.doClick();
                         // Hide the popup menu after the action is performed
-                        pm.setVisible(false);
+                        // pm.setVisible(false);
                     } else if (!pm.getBounds().contains(point)) {
                         pm.setVisible(false);
                     }
